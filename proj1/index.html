@@ -7,25 +7,18 @@
 <p>
   <img src="https://cs184.eecs.berkeley.edu/cs184_sp16_content/article_images/3_1.jpg" width="800px" align="middle"/>
 </p>
-<h3>Project write-up guidelines and instructions</h3>
-<p>We have provided a simple HTML skeleton in <em>index.html</em> found within the <em>docs</em> directory to help you get started and structure your write-up.</p>
-<p>You are also welcome to create your own webpage report from scratch using your own preferred frameworks or tools. However, <strong>please follow the same overall structure as described in the deliverables section below</strong>.</p>
-<p>The goals of your write-up are for you to (a) think about and articulate what you've built and learned in your own words, (b) have a write-up of the project to take away from the class. Your write-up should include:</p>
-<ul>
-<li>An overview of the project, your approach to and implementation for each of the parts, and what problems you encountered and how you solved them. Strive for clarity and succinctness.</li>
-<li>On each part, make sure to include the results described in the corresponding Deliverables section in addition to your explanation. If you failed to generate any results correctly, provide a brief explanation of why.</li>
-<li>The final (optional) part for the art competition is where you have the opportunity to be creative and individual, so be sure to provide a good description of what you were going for and how you implemented it.</li>
-<li>Clearly indicate any extra credit items you completed, and provide a thorough explanation and illustration for each of them.</li>
-</ul>
-<p>The write-up is one of our main methods of evaluating your work, so it is important to spend the time to do it correctly and thoroughly. Plan ahead to allocate time for the write-up well before the deadline.</p>
-<h3><a name="rubric"></a>Project Write-up Deliverables and Rubric</h3>
-<p>Note that this rubric is rather coarse. The content and quality of your write-up are extremely important, and you should make sure to at <em>least</em> address all the points listed below. The extra credit portions are intended for students who want to challenge themselves and explore methods beyond the fundamentals, and are not worth a large amount of points. In other words, don't necessarily expect to use the extra credit points on these projects to make up for lost points elsewhere.</p>
+<h3>Project 1 Rasterizer By Somya Mohindra </h3>
 <h4>Overview</h4>
-<p>Give a high-level overview of what you implemented in this project. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the project.</p>
-<h4>Task 1 (20 pts)</h4>
+<p>A rasterizer takes descriptions of coordinates and renders them into pixel values we can display on our screens. This project focused on triangle rasterization that includes antialiasing techniques like supersampling, sampling, and level sampling of multiple mipmaps. The rasterizer also handles affine transformations including rotation, scaling, and translation. The most interesting part of this project was discovering the significant image improvements that came from implementing each of the antialiasing techniques when doing texture mapping. 
+</p
+<h4>Task 1</h4>
 <ul>
 <li>Walk through how you rasterize triangles in your own words.</li>
+<p>We first calculate the bounding box of the triangle by finding the minimum and maximum x value and y values. Then we do a three line test (prewritten in the “inside” function within triangulation.cpp) to see if a given sample point is within the triangle of interest. We only need to sample the points within our bounding box, rather than in our entire pixel buffer. The “inside” function calculates the lines formed by all three triangle vertices. Then, it calculates if the vectors formed from the sample point to these lines are all positive (if using counter-clockwise edge lines) or all negative (if using clockwise edge lines). For all the sample points inside our triangle, we assign the sample buffer at the (x,y) pairing equal to the given color.
+  </p>
 <li>Explain how your algorithm is no worse than one that checks each sample within the bounding box of the triangle.</li>
+  <p> As explained earlier, the algorithm only scans the samples within the calculated bounding box of the triangle to see if they are contained within the triangle, therefore, it is not any worse, but it is also not any better.
+  </p>
 <li>Show a <em>png</em> screenshot of <em>basic/test4.svg</em> with the default viewing parameters and with the pixel inspector centered on an interesting part of the scene.</li>
 <li><em>Extra credit:</em> Explain any special optimizations you did beyond simple bounding box triangle rasterization, with a timing comparison table (we suggest using the c++ <code>clock()</code> function around the <code>svg.draw()</code> command in <code>DrawRend::redraw()</code> to compare millisecond timings with your various optimizations off and on).</li>
 </ul>
