@@ -4,21 +4,14 @@
 	Project 1- Rasterizer. Somya Mohindra. 
 	</head>
 	<body>
-		<p>
-		Overview
-
-		A rasterizer takes descriptions of coordinates and renders them into pixel values we can display on our screens. 
+		<h2><b>Overview<b></h2>
+		<p>A rasterizer takes descriptions of coordinates and renders them into pixel values we can display on our screens. 
 		This project focused on triangle rasterization that includes antialiasing techniques like supersampling, sampling, 
 		and level sampling of multiple mipmaps. The rasterizer also handles affine transformations including rotation, scaling, 
 		and translation. The most interesting part of this project was discovering the significant image improvements that came 
-		from implementing each of the antialiasing techniques when doing texture mapping. 
-
-		</p>
+			from implementing each of the antialiasing techniques when doing texture mapping.</p>		
 		
-		<p>
-		
-		
-			<b> Walk through how you rasterize triangles in your own words. </b>
+		<h3><b> Walk through how you rasterize triangles in your own words. </b></h3>
 			
 We first calculate the bounding box of the triangle by finding the minimum and maximum x value and y values. 
 Then we do a three line test (prewritten in the “inside” function within triangulation.cpp) to see if a given 
