@@ -20,8 +20,8 @@
   <p> As explained earlier, the algorithm only scans the samples within the calculated bounding box of the triangle to see if they are contained within the triangle, therefore, it is not any worse, but it is also not any better.
   </p>
 <li>Show a <em>png</em> screenshot of <em>basic/test4.svg</em> with the default viewing parameters and with the pixel inspector centered on an interesting part of the scene.</li>
-<li><em>Extra credit:</em> Explain any special optimizations you did beyond simple bounding box triangle rasterization, with a timing comparison table (we suggest using the c++ <code>clock()</code> function around the <code>svg.draw()</code> command in <code>DrawRend::redraw()</code> to compare millisecond timings with your various optimizations off and on).</li>
-</ul>
+
+ </ul>
 <h4>Task 2</h4>
 <ul>
 <li>Walk through your supersampling algorithm and data structures. Why is supersampling useful? What modifications did you make to the rasterization pipeline in the process? Explain how you used supersampling to antialias your triangles.</li>
@@ -32,23 +32,35 @@
 <h4>Task 3</h4>
 <ul>
 <li>Create an updated version of <em>svg/transforms/robot.svg</em> with cubeman doing something more interesting, like waving or running. Feel free to change his colors or proportions to suit your creativity. Save your <em>svg</em> file as <em>my_robot.svg</em> in your <em>docs/</em> directory and show a <em>png</em> screenshot of your rendered drawing in your write-up. Explain what you were trying to do with cubeman in words.</li>
-</ul>
+  <p> This is Nathan Chen ice skating with his leg up. </p>
+  </ul>
 <h4>Task 4</h4>
 <ul>
 <li>Explain barycentric coordinates in your own words and use an image to aid you in your explanation. One idea is to use a <em>svg</em> file that plots a single triangle with one red, one green, and one blue vertex, which should produce a smoothly blended color triangle.</li>
-<li>Show a <em>png</em> screenshot of <em>svg/basic/test7.svg</em> with default viewing parameters and sample rate 1. If you make any additional images with color gradients, include them.</li>
+<p> Barycentric coordinates help us interpolate values within a triangle. For example, if we want to find the color value of point V below, we can represent it as a weighted sum of the vertices of the given triangle. As we are using weights to assign the value of V, they sum to 1. For each pixel within the triangle below, we can use barycentric coordinates to assign color values that are a combination of all 3 vertices. 
+  </p>
+  <li>Show a <em>png</em> screenshot of <em>svg/basic/test7.svg</em> with default viewing parameters and sample rate 1. If you make any additional images with color gradients, include them.</li>
 </ul>
 <h4>Task 5</h4>
 <ul>
 <li>Explain pixel sampling in your own words and describe how you implemented it to perform texture mapping. Briefly discuss the two different pixel sampling methods, nearest and bilinear.</li>
-<li>Check out the <em>svg</em> files in the <em>svg/texmap/</em> directory. Use the pixel inspector to find a good example of where bilinear sampling clearly defeats nearest sampling. Show and compare four <em>png</em> screenshots using nearest sampling at 1 sample per pixel, nearest sampling at 16 samples per pixel, bilinear sampling at 1 sample per pixel, and bilinear sampling at 16 samples per pixel.</li>
+<p>In pixel sampling, we determine the pixel’s value by sampling the corresponding pixel in texture space. We implemented texture sampling using nearest neighbor and bilinear sampling. Nearest neighbor is the easier way to perform texture mapping. In nearest neighbor sampling, we use barycentric coordinates to get the sample pixel’s value in texture space. Then we scale the texture coordinate values to the mipmap’s width and height, round it, and then return the color value at the given point. In bilinear sampling, we take the four pixels surrounding the sample pixel and average them using linear interpolation. Similar to in nearest neighbor sampling, we use barycentric coordinates to get the sample pixel’s corresponding (u,v) coordinates. Then we scale the texture coordinate values to the mipmap’s width and height. Instead of rounding it, we take the ceiling and floor value of the point in question to get the four adjacent pixel coordinates. Then we grab the color values at those locations and linearly interpolate (weighted average) them to get our texture color coordinate. 
+  </p>
+  <li>Check out the <em>svg</em> files in the <em>svg/texmap/</em> directory. Use the pixel inspector to find a good example of where bilinear sampling clearly defeats nearest sampling. Show and compare four <em>png</em> screenshots using nearest sampling at 1 sample per pixel, nearest sampling at 16 samples per pixel, bilinear sampling at 1 sample per pixel, and bilinear sampling at 16 samples per pixel.</li>
 <li>Comment on the relative differences. Discuss when there will be a large difference between the two methods and why.</li>
-</ul>
+<p>As we can see, the bilinear sampling is more smooth and without a jagged line in both cases. This is due to the interpolation smoothing out the high frequency changes. There is a more significant difference in the 1 sample per pixel images because the supersampling 16x helps to blur out the high frequency values even before bilinear sampling. 
+  </p>
+  </ul>
 <h4>Task 6</h4>
 <ul>
 <li>Explain level sampling in your own words and describe how you implemented it for texture mapping.</li>
-<li>You can now adjust your sampling technique by selecting pixel sampling, level sampling, or the number of samples per pixel. Describe the tradeoffs between speed, memory usage, and antialiasing power between the three various techniques.</li>
-<li>Using a <em>png</em> file you find yourself, show us four versions of the image, using the combinations of <code>L_ZERO</code> and <code>P_NEAREST</code>, <code>L_ZERO</code> and <code>P_LINEAR</code>, <code>L_NEAREST</code> and <code>P_NEAREST</code>, as well as <code>L_NEAREST</code> and <code>P_LINEAR</code>.
+<p>	There are 2 problems with texture mapping: When the texture image is too small the resulting image becomes really stretched and when the texture image is too large the resulting image is not sampled frequently enough, and aliasing occurs. To solve these problems we can downsample the texture map and create a low-pass filter. We save a variety of levels of downsampling in mipmaps. These mipmaps can show us the image when it is supposed to be far away (more blurry and higher level mipmap) or close to us (more clear and lower level mipmap). We implemented 3 types of level sampling: ZERO, which samples the high resolution mipmap, NEAREST, which samples the mipmap closest to the calculated level, and LINEAR, which finds a color between the level above and below the calculated level. To find the calculated level, we find the (u,v) coordinates of the sample (sx,sy) and the adjacent points (sx+1,sy) and (sx,sy+1). We compared the distance between these 3 coordinates in screen space to their corresponding distance in texture map space, which helps us figure out what level downsampling (which mipmap) to select. We calculated the level D according to the formula:
+The edge cases we considered were when the level values were less than 0, we set them equal to 0. If the level value was above mipmap.size(), we set it equal to mipmap.size() -1. Also if the floor and ceiling value of the level were equal to the level itself, in other words, when the calculated level was an integer, we did not try to use interpolation across two levels for LINEAR level sampling. 
+  </p>
+  <li>You can now adjust your sampling technique by selecting pixel sampling, level sampling, or the number of samples per pixel. Describe the tradeoffs between speed, memory usage, and antialiasing power between the three various techniques.</li>
+<p>Sampling once per pixel is faster than sampling multiple times per pixel. Nearest neighbor pixel sampling is faster than linear sampling because you do not need to sample from 4 texels and we do not need to calculate any linear interpolations. Nearest neighbor sampling shows less significant improvement than linear sampling when it comes to aliasing, because in linear sampling we use interpolation. Nearest neighbor uses less memory because we are not saving 4 sample texels. ZERO and NEAREST level sampling only sample one texel and do not require any linear interpolation making them faster and lower memory. LINEAR level sampling uses more memory and is slower, but it shows more significant antialiasing improvement because it interpolates values between levels. In summary, the LINEAR level sampling, LINEAR pixel sampling, and 16 sample per pixel setting would create the best image, but could be the slowest and most expensive for memory.
+  </p>
+  <li>Using a <em>png</em> file you find yourself, show us four versions of the image, using the combinations of <code>L_ZERO</code> and <code>P_NEAREST</code>, <code>L_ZERO</code> and <code>P_LINEAR</code>, <code>L_NEAREST</code> and <code>P_NEAREST</code>, as well as <code>L_NEAREST</code> and <code>P_LINEAR</code>.
 <ul>
 <li>To use your own <em>png</em>, make a copy of one of the existing <em>svg</em> files in <em>svg/texmap/</em> (or create your own modelled after one of the provided <em>svg</em> files). Then, near the top of the file, change the texture filename to point to your own <em>png</em>. From there, you can run ./draw and pass in that svg file to render it and then save a screenshot of your results.</li>
 <li><strong>Note</strong>: Choose a <em>png</em> that showcases the different sampling effects well. You may also want to zoom in/out, use the pixel inspector, etc. to demonstrate the differences.</li>
