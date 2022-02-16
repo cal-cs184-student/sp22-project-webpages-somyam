@@ -20,7 +20,9 @@
   <p> As explained earlier, the algorithm only scans the samples within the calculated bounding box of the triangle to see if they are contained within the triangle, therefore, it is not any worse, but it is also not any better.
   </p>
 <li>Show a <em>png</em> screenshot of <em>basic/test4.svg</em> with the default viewing parameters and with the pixel inspector centered on an interesting part of the scene.</li>
-
+<p>
+  <img src="./Screen Shot 2022-02-16 at 12.40.27 PM.png" width = "400px" align="middle"/>
+  </p>
  </ul>
 <h4>Task 2</h4>
 <ul>
@@ -28,26 +30,61 @@
 <p>Supersampling is the process of sampling many (sample_rate) times per pixel and averaging those samples to blur and filter out higher frequencies. This reduces the appearance of aliasing, by allowing us to surpass the Nyquist frequency. The first modification I made was to sample_buffer, resizing it to be a 1D list of size width*height*sample_rate to collect all the supersample colors. This length changes as the user changes supersample rate. In rasterize_triangle, I first looped over the pixels within the bounding box of the triangle (which I also did in task 1). For each sample (x,y), I incremented each of the coordinate values by 1/sqrt(sample_rate) as many times as possible while staying within the bounds of the pixel. I offset these supersamples by ½*sqrt(sample_rate) in order to start the supersampling at an appropriate location. I saved the color of the supersample (sx,sy) into the sample_buffer. In resolve_to_framebuffer, I averaged the colors of every set of sample_rate samples and placed the final color values into the frame_buffer. For example, if my sample_rate is 4, I took every 4 indices in the sample_buffer, averaged their color values and placed the output in the frame_buffer. 
   </p>
   <li>Show <em>png</em> screenshots of <em>basic/test4.svg</em> with the default viewing parameters and sample rates 1, 4, and 16 to compare them side-by-side. Position the pixel inspector over an area that showcases the effect dramatically; for example, a very skinny triangle corner. Explain why these results are observed.</li>
-</ul>
+<p>
+  <img src="./Screen Shot 2022-02-16 at 12.41.15 PM.png" width = "400px" align="middle"/>
+  </p>
+  <p>
+  <img src="./Screen Shot 2022-02-16 at 12.41.19 PM.png" width = "400px" align="middle"/>
+  </p>
+  <p>
+  <img src="./Screen Shot 2022-02-16 at 12.41.26 PM.png" width = "400px" align="middle"/>
+  </p>
+  
+  </ul>
 <h4>Task 3</h4>
 <ul>
 <li>Create an updated version of <em>svg/transforms/robot.svg</em> with cubeman doing something more interesting, like waving or running. Feel free to change his colors or proportions to suit your creativity. Save your <em>svg</em> file as <em>my_robot.svg</em> in your <em>docs/</em> directory and show a <em>png</em> screenshot of your rendered drawing in your write-up. Explain what you were trying to do with cubeman in words.</li>
+ 
+    <p>
+  <img src="./Screen Shot 2022-02-16 at 12.41.40 PM.png" width = "400px" align="middle"/>
+  </p>
   <p> This is Nathan Chen ice skating with his leg up. </p>
   </ul>
 <h4>Task 4</h4>
 <ul>
 <li>Explain barycentric coordinates in your own words and use an image to aid you in your explanation. One idea is to use a <em>svg</em> file that plots a single triangle with one red, one green, and one blue vertex, which should produce a smoothly blended color triangle.</li>
 <p> Barycentric coordinates help us interpolate values within a triangle. For example, if we want to find the color value of point V below, we can represent it as a weighted sum of the vertices of the given triangle. As we are using weights to assign the value of V, they sum to 1. For each pixel within the triangle below, we can use barycentric coordinates to assign color values that are a combination of all 3 vertices. 
+     <p>
+  <img src="./Screen Shot 2022-02-16 at 12.41.48 PM.png" width = "400px" align="middle"/>
+  </p>
   </p>
   <li>Show a <em>png</em> screenshot of <em>svg/basic/test7.svg</em> with default viewing parameters and sample rate 1. If you make any additional images with color gradients, include them.</li>
-</ul>
+    <p>
+  <img src="./Screen Shot 2022-02-16 at 12.41.53 PM.png" width = "400px" align="middle"/>
+  </p>
+  
+  </ul>
 <h4>Task 5</h4>
 <ul>
 <li>Explain pixel sampling in your own words and describe how you implemented it to perform texture mapping. Briefly discuss the two different pixel sampling methods, nearest and bilinear.</li>
 <p>In pixel sampling, we determine the pixel’s value by sampling the corresponding pixel in texture space. We implemented texture sampling using nearest neighbor and bilinear sampling. Nearest neighbor is the easier way to perform texture mapping. In nearest neighbor sampling, we use barycentric coordinates to get the sample pixel’s value in texture space. Then we scale the texture coordinate values to the mipmap’s width and height, round it, and then return the color value at the given point. In bilinear sampling, we take the four pixels surrounding the sample pixel and average them using linear interpolation. Similar to in nearest neighbor sampling, we use barycentric coordinates to get the sample pixel’s corresponding (u,v) coordinates. Then we scale the texture coordinate values to the mipmap’s width and height. Instead of rounding it, we take the ceiling and floor value of the point in question to get the four adjacent pixel coordinates. Then we grab the color values at those locations and linearly interpolate (weighted average) them to get our texture color coordinate. 
   </p>
   <li>Check out the <em>svg</em> files in the <em>svg/texmap/</em> directory. Use the pixel inspector to find a good example of where bilinear sampling clearly defeats nearest sampling. Show and compare four <em>png</em> screenshots using nearest sampling at 1 sample per pixel, nearest sampling at 16 samples per pixel, bilinear sampling at 1 sample per pixel, and bilinear sampling at 16 samples per pixel.</li>
-<li>Comment on the relative differences. Discuss when there will be a large difference between the two methods and why.</li>
+<p>
+   1 sample:
+    <img src="./Screen Shot 2022-02-16 at 12.42.04 PM.png" width = "400px" align="middle"/>
+  <img src="./Screen Shot 2022-02-16 at 12.42.08 PM.png" width = "400px" align="middle"/>
+
+  
+  </p>
+    
+    <p>
+        <img src="./Screen Shot 2022-02-16 at 12.42.08 PM.png" width = "400px" align="middle"/>
+  <img src="./Screen Shot 2022-02-16 at 12.42.21 PM.png" width = "400px" align="middle"/>
+
+  </p>
+  
+  <li>Comment on the relative differences. Discuss when there will be a large difference between the two methods and why.</li>
 <p>As we can see, the bilinear sampling is more smooth and without a jagged line in both cases. This is due to the interpolation smoothing out the high frequency changes. There is a more significant difference in the 1 sample per pixel images because the supersampling 16x helps to blur out the high frequency values even before bilinear sampling. 
   </p>
   </ul>
@@ -68,9 +105,22 @@
 <p>Sampling once per pixel is faster than sampling multiple times per pixel. Nearest neighbor pixel sampling is faster than linear sampling because you do not need to sample from 4 texels and we do not need to calculate any linear interpolations. Nearest neighbor sampling shows less significant improvement than linear sampling when it comes to aliasing, because in linear sampling we use interpolation. Nearest neighbor uses less memory because we are not saving 4 sample texels. ZERO and NEAREST level sampling only sample one texel and do not require any linear interpolation making them faster and lower memory. LINEAR level sampling uses more memory and is slower, but it shows more significant antialiasing improvement because it interpolates values between levels. In summary, the LINEAR level sampling, LINEAR pixel sampling, and 16 sample per pixel setting would create the best image, but could be the slowest and most expensive for memory.
   </p>
   <li>Using a <em>png</em> file you find yourself, show us four versions of the image, using the combinations of <code>L_ZERO</code> and <code>P_NEAREST</code>, <code>L_ZERO</code> and <code>P_LINEAR</code>, <code>L_NEAREST</code> and <code>P_NEAREST</code>, as well as <code>L_NEAREST</code> and <code>P_LINEAR</code>.
-<ul>
-<li>To use your own <em>png</em>, make a copy of one of the existing <em>svg</em> files in <em>svg/texmap/</em> (or create your own modelled after one of the provided <em>svg</em> files). Then, near the top of the file, change the texture filename to point to your own <em>png</em>. From there, you can run ./draw and pass in that svg file to render it and then save a screenshot of your results.</li>
-<li><strong>Note</strong>: Choose a <em>png</em> that showcases the different sampling effects well. You may also want to zoom in/out, use the pixel inspector, etc. to demonstrate the differences.</li>
-</ul>
+
+      
+  <p>
+  <img src="./Screen Shot 2022-02-16 at 12.54.15 PM.png" width="400px" align="middle"/>
+</p>
+      
+  <p>
+  <img src="./Screen Shot 2022-02-16 at 12.54.34 PM.png" width="400px" align="middle"/>
+</p>
+      
+  <p>
+  <img src="./Screen Shot 2022-02-16 at 12.54.51 PM.png" width="400px" align="middle"/>
+</p>
+      
+  <p>
+  <img src="./Screen Shot 2022-02-16 at 12.55.04 PM.png" width="400px" align="middle"/>
+</p>
 </li>
 </ul>
