@@ -22,28 +22,30 @@
 <li>Show a <em>png</em> screenshot of <em>basic/test4.svg</em> with the default viewing parameters and with the pixel inspector centered on an interesting part of the scene.</li>
 <li><em>Extra credit:</em> Explain any special optimizations you did beyond simple bounding box triangle rasterization, with a timing comparison table (we suggest using the c++ <code>clock()</code> function around the <code>svg.draw()</code> command in <code>DrawRend::redraw()</code> to compare millisecond timings with your various optimizations off and on).</li>
 </ul>
-<h4>Task 2 (20 pts)</h4>
+<h4>Task 2</h4>
 <ul>
 <li>Walk through your supersampling algorithm and data structures. Why is supersampling useful? What modifications did you make to the rasterization pipeline in the process? Explain how you used supersampling to antialias your triangles.</li>
-<li>Show <em>png</em> screenshots of <em>basic/test4.svg</em> with the default viewing parameters and sample rates 1, 4, and 16 to compare them side-by-side. Position the pixel inspector over an area that showcases the effect dramatically; for example, a very skinny triangle corner. Explain why these results are observed.</li>
+<p>Supersampling is the process of sampling many (sample_rate) times per pixel and averaging those samples to blur and filter out higher frequencies. This reduces the appearance of aliasing, by allowing us to surpass the Nyquist frequency. The first modification I made was to sample_buffer, resizing it to be a 1D list of size width*height*sample_rate to collect all the supersample colors. This length changes as the user changes supersample rate. In rasterize_triangle, I first looped over the pixels within the bounding box of the triangle (which I also did in task 1). For each sample (x,y), I incremented each of the coordinate values by 1/sqrt(sample_rate) as many times as possible while staying within the bounds of the pixel. I offset these supersamples by ½*sqrt(sample_rate) in order to start the supersampling at an appropriate location. I saved the color of the supersample (sx,sy) into the sample_buffer. In resolve_to_framebuffer, I averaged the colors of every set of sample_rate samples and placed the final color values into the frame_buffer. For example, if my sample_rate is 4, I took every 4 indices in the sample_buffer, averaged their color values and placed the output in the frame_buffer. 
+  </p>
+  <li>Show <em>png</em> screenshots of <em>basic/test4.svg</em> with the default viewing parameters and sample rates 1, 4, and 16 to compare them side-by-side. Position the pixel inspector over an area that showcases the effect dramatically; for example, a very skinny triangle corner. Explain why these results are observed.</li>
 <li><em>Extra credit:</em> If you implemented alternative antialiasing methods, describe them and include comparison pictures demonstrating the difference between your method and grid-based supersampling.</li>
 </ul>
-<h4>Task 3 (10 pts)</h4>
+<h4>Task 3</h4>
 <ul>
 <li>Create an updated version of <em>svg/transforms/robot.svg</em> with cubeman doing something more interesting, like waving or running. Feel free to change his colors or proportions to suit your creativity. Save your <em>svg</em> file as <em>my_robot.svg</em> in your <em>docs/</em> directory and show a <em>png</em> screenshot of your rendered drawing in your write-up. Explain what you were trying to do with cubeman in words.</li>
 </ul>
-<h4>Task 4 (10 pts)</h4>
+<h4>Task 4</h4>
 <ul>
 <li>Explain barycentric coordinates in your own words and use an image to aid you in your explanation. One idea is to use a <em>svg</em> file that plots a single triangle with one red, one green, and one blue vertex, which should produce a smoothly blended color triangle.</li>
 <li>Show a <em>png</em> screenshot of <em>svg/basic/test7.svg</em> with default viewing parameters and sample rate 1. If you make any additional images with color gradients, include them.</li>
 </ul>
-<h4>Task 5 (15 pts)</h4>
+<h4>Task 5</h4>
 <ul>
 <li>Explain pixel sampling in your own words and describe how you implemented it to perform texture mapping. Briefly discuss the two different pixel sampling methods, nearest and bilinear.</li>
 <li>Check out the <em>svg</em> files in the <em>svg/texmap/</em> directory. Use the pixel inspector to find a good example of where bilinear sampling clearly defeats nearest sampling. Show and compare four <em>png</em> screenshots using nearest sampling at 1 sample per pixel, nearest sampling at 16 samples per pixel, bilinear sampling at 1 sample per pixel, and bilinear sampling at 16 samples per pixel.</li>
 <li>Comment on the relative differences. Discuss when there will be a large difference between the two methods and why.</li>
 </ul>
-<h4>Task 6 (25 pts)</h4>
+<h4>Task 6</h4>
 <ul>
 <li>Explain level sampling in your own words and describe how you implemented it for texture mapping.</li>
 <li>You can now adjust your sampling technique by selecting pixel sampling, level sampling, or the number of samples per pixel. Describe the tradeoffs between speed, memory usage, and antialiasing power between the three various techniques.</li>
